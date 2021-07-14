@@ -4,7 +4,7 @@
 #define NULL ((void *)0)
 #endif
 
-mpu6050_drv_t *_drv = NULL;
+static mpu6050_drv_t *_drv = NULL;
 
 void mpu6050_init(mpu6050_drv_t *drv, mpu6050_cmd_list_t init_sequence, uint8_t len)
 {
