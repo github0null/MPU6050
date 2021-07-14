@@ -106,9 +106,9 @@ mpu6050_data_t *mpu6050_read_data(mpu6050_data_t *dat)
 
     /* gyro */
     unit = 131.0f / (1 << ((_drv->read(MPU6050_GYRO_CONFIG) >> 3) & 0x03));
-    _dat->x = (((int16_t)_drv->read(MPU6050_GYRO_XOUT_H) << 8) | _drv->read(MPU6050_GYRO_XOUT_L)) / unit;
-    _dat->y = (((int16_t)_drv->read(MPU6050_GYRO_YOUT_H) << 8) | _drv->read(MPU6050_GYRO_YOUT_L)) / unit;
-    _dat->z = (((int16_t)_drv->read(MPU6050_GYRO_ZOUT_H) << 8) | _drv->read(MPU6050_GYRO_ZOUT_L)) / unit;
+    dat->angle[X] = (((int16_t)_drv->read(MPU6050_GYRO_XOUT_H) << 8) | _drv->read(MPU6050_GYRO_XOUT_L)) / unit;
+    dat->angle[Y] = (((int16_t)_drv->read(MPU6050_GYRO_YOUT_H) << 8) | _drv->read(MPU6050_GYRO_YOUT_L)) / unit;
+    dat->angle[Z] = (((int16_t)_drv->read(MPU6050_GYRO_ZOUT_H) << 8) | _drv->read(MPU6050_GYRO_ZOUT_L)) / unit;
 }
 
 void mpu6050_write_cmd(uint8_t regAddr, uint8_t val)
