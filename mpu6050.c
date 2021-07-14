@@ -1,7 +1,7 @@
 #include "mpu6050.h"
 
 #ifndef NULL
-#define NULL ((void*)0)
+#define NULL ((void *)0)
 #endif
 
 mpu6050_drv_t *_drv = NULL;
@@ -88,7 +88,7 @@ bool mpu6050_test()
     return test_passed;
 }
 
-mpu6050_data_t * mpu6050_read_data(mpu6050_data_t *dat)
+mpu6050_data_t *mpu6050_read_data(mpu6050_data_t *dat)
 {
     int16_t tmp;
     float unit;

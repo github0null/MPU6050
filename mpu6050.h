@@ -326,7 +326,7 @@ bool mpu6050_test();
 
 void mpu6050_write_cmd(uint8_t regAddr, uint8_t val);
 
-mpu6050_data_t * mpu6050_read_data(mpu6050_data_t *dat);
+mpu6050_data_t *mpu6050_read_data(mpu6050_data_t *dat);
 
 #ifdef __cplusplus
 }
