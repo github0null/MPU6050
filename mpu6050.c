@@ -88,6 +88,16 @@ bool mpu6050_test()
     return test_passed;
 }
 
+static float _shift_right_f(float value, uint16_t num)
+{
+    float tmp = value;
+
+    for (uint16_t i = 0; i < num; i++)
+        tmp /= 2;
+
+    return tmp;
+}
+
 mpu6050_data_t *mpu6050_read_data(mpu6050_data_t *dat)
 {
     int16_t tmp;
@@ -99,13 +109,13 @@ mpu6050_data_t *mpu6050_read_data(mpu6050_data_t *dat)
     dat->temp = 35.0f + (tmp / 340.0f); // 36.53f + res / 340.0f;
 
     /* accel */
-    unit = 16384 / (1 << ((_drv->read(MPU6050_ACCEL_CONFIG) >> 3) & 0x03));
+    unit = (float)(16384 >> ((_drv->read(MPU6050_ACCEL_CONFIG) >> 3) & 0x03));
     dat->accel[X] = (((int16_t)_drv->read(MPU6050_ACCEL_XOUT_H) << 8) | _drv->read(MPU6050_ACCEL_XOUT_L)) / unit;
     dat->accel[Y] = (((int16_t)_drv->read(MPU6050_ACCEL_YOUT_H) << 8) | _drv->read(MPU6050_ACCEL_YOUT_L)) / unit;
     dat->accel[Z] = (((int16_t)_drv->read(MPU6050_ACCEL_ZOUT_H) << 8) | _drv->read(MPU6050_ACCEL_ZOUT_L)) / unit;
 
     /* gyro */
-    unit = 131.0f / (1 << ((_drv->read(MPU6050_GYRO_CONFIG) >> 3) & 0x03));
+    unit = _shift_right_f(131, (_drv->read(MPU6050_GYRO_CONFIG) >> 3) & 0x03);
     dat->angle[X] = (((int16_t)_drv->read(MPU6050_GYRO_XOUT_H) << 8) | _drv->read(MPU6050_GYRO_XOUT_L)) / unit;
     dat->angle[Y] = (((int16_t)_drv->read(MPU6050_GYRO_YOUT_H) << 8) | _drv->read(MPU6050_GYRO_YOUT_L)) / unit;
     dat->angle[Z] = (((int16_t)_drv->read(MPU6050_GYRO_ZOUT_H) << 8) | _drv->read(MPU6050_GYRO_ZOUT_L)) / unit;
