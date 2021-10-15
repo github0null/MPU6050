@@ -45,13 +45,13 @@ bool mpu6050_test()
     /* read base data */
     _drv->write(MPU6050_ACCEL_CONFIG, MPU6050_ACCEL_CONFIG_FS_8);
     _drv->write(MPU6050_GYRO_CONFIG, MPU6050_GYRO_CONFIG_FS_250);
-    _drv->delay(20);
+    _drv->delay(100);
     mpu6050_read_data(&base_data);
 
     /* read test data */
     _drv->write(MPU6050_ACCEL_CONFIG, MPU6050_ACCEL_CONFIG_FS_8 | MPU6050_ACCEL_CONFIG_TEST_FLAG);
     _drv->write(MPU6050_GYRO_CONFIG, MPU6050_GYRO_CONFIG_FS_250 | MPU6050_GYRO_CONFIG_TEST_FLAG);
-    _drv->delay(20);
+    _drv->delay(100);
     mpu6050_read_data(&test_data);
 
     /* test gyro */
@@ -119,6 +119,8 @@ mpu6050_data_t *mpu6050_read_data(mpu6050_data_t *dat)
     dat->angle[X] = (((int16_t)_drv->read(MPU6050_GYRO_XOUT_H) << 8) | _drv->read(MPU6050_GYRO_XOUT_L)) / unit;
     dat->angle[Y] = (((int16_t)_drv->read(MPU6050_GYRO_YOUT_H) << 8) | _drv->read(MPU6050_GYRO_YOUT_L)) / unit;
     dat->angle[Z] = (((int16_t)_drv->read(MPU6050_GYRO_ZOUT_H) << 8) | _drv->read(MPU6050_GYRO_ZOUT_L)) / unit;
+
+    return dat;
 }
 
 void mpu6050_write_cmd(uint8_t regAddr, uint8_t val)
