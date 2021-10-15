@@ -291,6 +291,7 @@
 #define MPU6050_FIFO_COUNTH 0x72
 #define MPU6050_FIFO_COUNTL 0x73
 #define MPU6050_FIFO_R_W 0x74
+#define MPU6050_WHO_AM_I 0x75// !< WHO_AM_I register identifies the device. Expected value is 0x68.
 
 ////////////////////////////////////////////////////////////////
 //                       mpu6050 api
@@ -302,8 +303,9 @@ extern "C" {
 
 typedef struct
 {
-    uint8_t (*read)(uint8_t addr);
-    void (*write)(uint8_t addr, uint8_t dat);
+    uint8_t dev_addr;
+    bool (*read)(uint8_t reg_addr, uint8_t *dat);
+    bool (*write)(uint8_t reg_addr, uint8_t dat);
     void (*delay)(uint16_t ms);
 } mpu6050_drv_t;
 
@@ -320,13 +322,13 @@ typedef struct
     float angle[3];
 } mpu6050_data_t;
 
-void mpu6050_init(mpu6050_drv_t *drv, mpu6050_cmd_list_t init_sequence, uint8_t len);
+bool mpu6050_init(mpu6050_drv_t *drv, mpu6050_cmd_list_t init_sequence, uint8_t len);
 
 bool mpu6050_test();
 
 void mpu6050_write_cmd(uint8_t regAddr, uint8_t val);
 
-mpu6050_data_t *mpu6050_read_data(mpu6050_data_t *dat);
+bool mpu6050_read_data(mpu6050_data_t *dat);
 
 #ifdef __cplusplus
 }
