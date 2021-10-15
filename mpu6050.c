@@ -122,7 +122,7 @@ bool mpu6050_read_data(mpu6050_data_t *dat)
 
     uint8_t buf[DAT_REG_NUM];
     uint8_t addr, idx, tmp;
-    int16_t temp;
+    int16_t tmp_val;
 
     float acce_unit, gyro_unit;
 
@@ -145,18 +145,22 @@ bool mpu6050_read_data(mpu6050_data_t *dat)
 #define DAT_GYRO_IDX 8
 
     /* accel */
-    dat->accel[X] = (((int16_t)buf[DAT_ACCE_IDX + 0] << 8) | buf[DAT_ACCE_IDX + 1]) / acce_unit;
-    dat->accel[Y] = (((int16_t)buf[DAT_ACCE_IDX + 2] << 8) | buf[DAT_ACCE_IDX + 3]) / acce_unit;
-    dat->accel[Z] = (((int16_t)buf[DAT_ACCE_IDX + 4] << 8) | buf[DAT_ACCE_IDX + 5]) / acce_unit;
+    for (idx = 0, addr = 0; idx < 3; idx++, addr += 2)
+    {
+        tmp_val         = (buf[DAT_ACCE_IDX + addr + 0] << 8) | buf[DAT_ACCE_IDX + addr + 1];
+        dat->accel[idx] = tmp_val / acce_unit;
+    }
 
     /* temperature 36.53f + res / 340.0f */
-    temp      = (((int16_t)buf[DAT_TEMP_IDX + 0] << 8) | buf[DAT_TEMP_IDX + 1]);
-    dat->temp = 35.0f + (temp / 340.0f);
+    tmp_val   = (buf[DAT_TEMP_IDX + 0] << 8) | buf[DAT_TEMP_IDX + 1];
+    dat->temp = 35.0f + (tmp_val / 340.0f);
 
     /* gyro */
-    dat->angle[X] = (((int16_t)buf[DAT_GYRO_IDX + 0] << 8) | buf[DAT_GYRO_IDX + 1]) / gyro_unit;
-    dat->angle[Y] = (((int16_t)buf[DAT_GYRO_IDX + 2] << 8) | buf[DAT_GYRO_IDX + 3]) / gyro_unit;
-    dat->angle[Z] = (((int16_t)buf[DAT_GYRO_IDX + 4] << 8) | buf[DAT_GYRO_IDX + 5]) / gyro_unit;
+    for (idx = 0, addr = 0; idx < 3; idx++, addr += 2)
+    {
+        tmp_val         = (buf[DAT_GYRO_IDX + addr + 0] << 8) | buf[DAT_GYRO_IDX + addr + 1];
+        dat->angle[idx] = tmp_val / gyro_unit;
+    }
 
     return true;
 }
