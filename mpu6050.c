@@ -10,9 +10,19 @@
 
 static mpu6050_drv_t *_drv = NULL;
 
+static float _shift_right_f(float value, uint16_t num)
+{
+    float tmp = value;
+    uint16_t i;
+
+    for (i = 0; i < num; i++) tmp /= 2;
+
+    return tmp;
+}
+
 bool mpu6050_init(mpu6050_drv_t *drv, mpu6050_cmd_list_t init_sequence, uint8_t len)
 {
-    uint8_t i;
+    uint8_t i, tmp;
     uint8_t who_am_i;
 
     /* save drv */
@@ -44,6 +54,12 @@ bool mpu6050_init(mpu6050_drv_t *drv, mpu6050_cmd_list_t init_sequence, uint8_t 
     }
 
     _drv->write(MPU6050_PWR_MGMT_2, 0x00);
+
+    /* get sensor unit */
+    if (_drv->read(MPU6050_ACCEL_CONFIG, &tmp) == false) return false;
+    _drv->acce_unit = (float)(16384 >> ((tmp >> 3) & 0x03));
+    if (_drv->read(MPU6050_GYRO_CONFIG, &tmp) == false) return false;
+    _drv->gyro_unit = _shift_right_f(131, (tmp >> 3) & 0x03);
 
     return true;
 }
@@ -106,39 +122,29 @@ bool mpu6050_test()
     return test_passed;
 }
 
-static float _shift_right_f(float value, uint16_t num)
-{
-    float tmp = value;
-    uint16_t i;
-
-    for (i = 0; i < num; i++) tmp /= 2;
-
-    return tmp;
-}
-
 bool mpu6050_read_data(mpu6050_data_t *dat)
 {
 #define DAT_REG_NUM 14
 
     uint8_t buf[DAT_REG_NUM];
-    uint8_t addr, idx, tmp;
+    uint8_t addr, idx;
     int16_t tmp_val;
 
-    float acce_unit, gyro_unit;
-
     /* read all reg */
-    for (addr = MPU6050_ACCEL_XOUT_H, idx = 0;
-         idx < DAT_REG_NUM;
-         idx++, addr++)
+    if (_drv->read_buf != NULL)
     {
-        if (_drv->read(addr, &buf[idx]) == false) return false;
+        if (_drv->read_buf(MPU6050_ACCEL_XOUT_H, buf, DAT_REG_NUM) == false)
+            return false;
     }
-
-    /* get sensor unit */
-    if (_drv->read(MPU6050_ACCEL_CONFIG, &tmp) == false) return false;
-    acce_unit = (float)(16384 >> ((tmp >> 3) & 0x03));
-    if (_drv->read(MPU6050_GYRO_CONFIG, &tmp) == false) return false;
-    gyro_unit = _shift_right_f(131, (tmp >> 3) & 0x03);
+    else
+    {
+        for (addr = MPU6050_ACCEL_XOUT_H, idx = 0;
+             idx < DAT_REG_NUM;
+             idx++, addr++)
+        {
+            if (_drv->read(addr, &buf[idx]) == false) return false;
+        }
+    }
 
 #define DAT_ACCE_IDX 0
 #define DAT_TEMP_IDX 6
@@ -148,10 +154,10 @@ bool mpu6050_read_data(mpu6050_data_t *dat)
     for (idx = 0, addr = 0; idx < 3; idx++, addr += 2)
     {
         tmp_val         = (buf[DAT_ACCE_IDX + addr + 0] << 8) | buf[DAT_ACCE_IDX + addr + 1];
-        dat->accel[idx] = tmp_val / acce_unit;
+        dat->accel[idx] = tmp_val / _drv->acce_unit;
     }
 
-    /* temperature 36.53f + res / 340.0f */
+    /* temperature 35 + res / 340.0f */
     tmp_val   = (buf[DAT_TEMP_IDX + 0] << 8) | buf[DAT_TEMP_IDX + 1];
     dat->temp = 35.0f + (tmp_val / 340.0f);
 
@@ -159,7 +165,7 @@ bool mpu6050_read_data(mpu6050_data_t *dat)
     for (idx = 0, addr = 0; idx < 3; idx++, addr += 2)
     {
         tmp_val         = (buf[DAT_GYRO_IDX + addr + 0] << 8) | buf[DAT_GYRO_IDX + addr + 1];
-        dat->angle[idx] = tmp_val / gyro_unit;
+        dat->angle[idx] = tmp_val / _drv->gyro_unit;
     }
 
     return true;

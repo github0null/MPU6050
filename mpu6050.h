@@ -303,10 +303,15 @@ extern "C" {
 
 typedef struct
 {
+    /* drv */
     uint8_t dev_addr;
     bool (*read)(uint8_t reg_addr, uint8_t *dat);
+    bool (*read_buf)(uint8_t reg_addr, uint8_t *dat, size_t len);
     bool (*write)(uint8_t reg_addr, uint8_t dat);
     void (*delay)(uint16_t ms);
+    /* auto-init fields, read-only */
+    float acce_unit;
+    float gyro_unit;
 } mpu6050_drv_t;
 
 typedef uint8_t *mpu6050_cmd_list_t[2];
