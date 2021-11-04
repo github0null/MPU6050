@@ -17,6 +17,10 @@
 #include "mpu6050_conf.h"
 #endif
 
+#ifdef MPU9250_EN
+#define MPU9250_ENABLED
+#endif
+
 /* IIC 写入时的地址，+1 为读取 */
 #ifndef MPU6050_AD0_HIGH
 #define MPU6050_DEVICE_ADDR 0xD0
@@ -29,6 +33,8 @@
 ////////////////////////////////////////////////////////////////
 
 /**
+ * 低通滤波频率
+ * 
  *          |   ACCELEROMETER    |           GYROSCOPE
  * DLPF_CFG | Bandwidth | Delay  | Bandwidth | Delay  | Sample Rate
  * ---------+-----------+--------+-----------+--------+-------------
@@ -39,14 +45,15 @@
  * 4        | 21Hz      | 8.5ms  | 20Hz      | 8.3ms  | 1kHz
  * 5        | 10Hz      | 13.8ms | 10Hz      | 13.4ms | 1kHz
  * 6        | 5Hz       | 19.0ms | 5Hz       | 18.6ms | 1kHz
- * 7        |   -- Reserved --   |   -- Reserved --   | Reserved
+ * 7        |   -- Reserved --   |   -- Reserved --   | 8kHz
 */
 
-/* 陀螺仪采样率分频，典型值：0x07(125Hz), DLPF_CFG enable: 1KHz/DIV, disable: 8KHz/DIV */
-#define MPU6050_SMPLRT_DIV_CONFIG 0x19
-
-/* 低通滤波频率，典型值：0x06(5Hz) */
+/* 低通滤波频率(DLPF_CFG)，典型值：0x06 (5Hz) */
 #define MPU6050_CONFIG 0x1A
+
+/* 陀螺仪采样率分频(Sample Rate)，典型值：0x07 (Sample Rate = 125Hz), 
+   DLPF_CFG enable: 1KHz/DIV, disable: 8KHz/DIV */
+#define MPU6050_SMPLRT_DIV_CONFIG 0x19
 
 /** 
  * 加速计自检、测量范围及高通滤波频率，典型值：0x01(2G，5Hz)

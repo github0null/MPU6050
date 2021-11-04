@@ -158,8 +158,13 @@ bool mpu6050_read_data(mpu6050_data_t *dat)
     }
 
     /* temperature 35 + res / 340.0f */
-    tmp_val   = (buf[DAT_TEMP_IDX + 0] << 8) | buf[DAT_TEMP_IDX + 1];
+    tmp_val = (buf[DAT_TEMP_IDX + 0] << 8) | buf[DAT_TEMP_IDX + 1];
+
+#ifdef MPU9250_ENABLED
+    dat->temp = 21.0f + (tmp_val / 333.87f);
+#else
     dat->temp = 35.0f + (tmp_val / 340.0f);
+#endif
 
     /* gyro */
     for (idx = 0, addr = 0; idx < 3; idx++, addr += 2)
