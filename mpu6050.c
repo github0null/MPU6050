@@ -20,9 +20,20 @@ static float _shift_right_f(float value, uint16_t num)
     return tmp;
 }
 
+static bool update_sensor_density()
+{
+    uint8_t tmp;
+    /* get sensor unit */
+    if (_drv->read(MPU6050_ACCEL_CONFIG, &tmp) == false) return false;
+    _drv->acce_unit = (float)(16384 >> ((tmp >> 3) & 0x03));
+    if (_drv->read(MPU6050_GYRO_CONFIG, &tmp) == false) return false;
+    _drv->gyro_unit = _shift_right_f(131, (tmp >> 3) & 0x03);
+    return true;
+}
+
 bool mpu6050_init(mpu6050_drv_t *drv, mpu6050_cmd_list_t init_sequence, uint8_t len)
 {
-    uint8_t i, tmp;
+    uint8_t i;
     uint8_t who_am_i;
 
     /* save drv */
@@ -55,11 +66,7 @@ bool mpu6050_init(mpu6050_drv_t *drv, mpu6050_cmd_list_t init_sequence, uint8_t 
 
     _drv->write(MPU6050_PWR_MGMT_2, 0x00);
 
-    /* get sensor unit */
-    if (_drv->read(MPU6050_ACCEL_CONFIG, &tmp) == false) return false;
-    _drv->acce_unit = (float)(16384 >> ((tmp >> 3) & 0x03));
-    if (_drv->read(MPU6050_GYRO_CONFIG, &tmp) == false) return false;
-    _drv->gyro_unit = _shift_right_f(131, (tmp >> 3) & 0x03);
+    update_sensor_density();
 
     return true;
 }
@@ -80,12 +87,14 @@ bool mpu6050_test()
     _drv->write(MPU6050_ACCEL_CONFIG, MPU6050_ACCEL_CONFIG_FS_8);
     _drv->write(MPU6050_GYRO_CONFIG, MPU6050_GYRO_CONFIG_FS_250);
     _drv->delay(100);
+    update_sensor_density();
     mpu6050_read_data(&base_data);
 
     /* read test data */
     _drv->write(MPU6050_ACCEL_CONFIG, MPU6050_ACCEL_CONFIG_FS_8 | MPU6050_ACCEL_CONFIG_TEST_FLAG);
     _drv->write(MPU6050_GYRO_CONFIG, MPU6050_GYRO_CONFIG_FS_250 | MPU6050_GYRO_CONFIG_TEST_FLAG);
     _drv->delay(100);
+    update_sensor_density();
     mpu6050_read_data(&test_data);
 
     /* test acce */
@@ -118,6 +127,8 @@ bool mpu6050_test()
     // recovery old conf
     _drv->write(MPU6050_ACCEL_CONFIG, accel_conf);
     _drv->write(MPU6050_GYRO_CONFIG, gyro_conf);
+
+    update_sensor_density();
 
     return test_passed;
 }

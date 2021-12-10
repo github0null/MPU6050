@@ -48,8 +48,26 @@
  * 7        |   -- Reserved --   |   -- Reserved --   | 8kHz
 */
 
-/* 低通滤波频率(DLPF_CFG)，典型值：0x06 (5Hz) */
+/* MPU6050 配置寄存器:
+    bit [7]     Reserved
+        [6]     FIFO_MODE
+        [5:3]   EXT_FSYNC_SET
+        [2:0]   DLFP_CFG
+*/
 #define MPU6050_CONFIG 0x1A
+
+/* 低通滤波频率(DLPF_CFG)，典型值：0x06 (5Hz) */
+#ifdef MPU9250_ENABLED
+#define MPU9250_DLPF_BW_8800HZ 0
+#define MPU9250_DLPF_BW_250HZ  0
+#define MPU9250_DLPF_BW_184HZ  1
+#define MPU9250_DLPF_BW_92HZ   2
+#define MPU9250_DLPF_BW_41HZ   3
+#define MPU9250_DLPF_BW_20HZ   4
+#define MPU9250_DLPF_BW_10HZ   5
+#define MPU9250_DLPF_BW_5HZ    6
+#define MPU9250_DLPF_BW_3600HZ 7
+#endif
 
 /* 陀螺仪采样率分频(Sample Rate)，典型值：0x07 (Sample Rate = 125Hz), 
    DLPF_CFG enable: 1KHz/DIV, disable: 8KHz/DIV */
@@ -72,18 +90,18 @@
  * 4         | On          | 0.63Hz
  * 7         | Hold        | None
 */
-#define MPU6050_ACCEL_CONFIG 0x1C
-#define MPU6050_ACCEL_CONFIG_FS_2 0x00
-#define MPU6050_ACCEL_CONFIG_FS_4 0x08
-#define MPU6050_ACCEL_CONFIG_FS_8 0x10
-#define MPU6050_ACCEL_CONFIG_FS_16 0x18
-#define MPU6050_ACCEL_CONFIG_DHPF_None 0x00
-#define MPU6050_ACCEL_CONFIG_DHPF_5Hz 0x01
-#define MPU6050_ACCEL_CONFIG_DHPF_2_5Hz 0x02
+#define MPU6050_ACCEL_CONFIG             0x1C
+#define MPU6050_ACCEL_CONFIG_FS_2        0x00
+#define MPU6050_ACCEL_CONFIG_FS_4        0x08
+#define MPU6050_ACCEL_CONFIG_FS_8        0x10
+#define MPU6050_ACCEL_CONFIG_FS_16       0x18
+#define MPU6050_ACCEL_CONFIG_DHPF_None   0x00
+#define MPU6050_ACCEL_CONFIG_DHPF_5Hz    0x01
+#define MPU6050_ACCEL_CONFIG_DHPF_2_5Hz  0x02
 #define MPU6050_ACCEL_CONFIG_DHPF_1_25Hz 0x03
 #define MPU6050_ACCEL_CONFIG_DHPF_0_63Hz 0x04
-#define MPU6050_ACCEL_CONFIG_DHPF_HOLD 0x07
-#define MPU6050_ACCEL_CONFIG_TEST_FLAG 0xE0 // 300mg ~ 950mg
+#define MPU6050_ACCEL_CONFIG_DHPF_HOLD   0x07
+#define MPU6050_ACCEL_CONFIG_TEST_FLAG   0xE0 // 300mg ~ 950mg
 
 /* 输出寄存器（只读）*/
 #define MPU6050_ACCEL_XOUT_H 0x3B
@@ -103,11 +121,11 @@
  * 2      | +/- 1000 degrees/s | 32.8 LSB/deg/s
  * 3      | +/- 2000 degrees/s | 16.4 LSB/deg/s
 */
-#define MPU6050_GYRO_CONFIG 0x1B
-#define MPU6050_GYRO_CONFIG_FS_250 0x00
-#define MPU6050_GYRO_CONFIG_FS_500 0x08
-#define MPU6050_GYRO_CONFIG_FS_1000 0x10
-#define MPU6050_GYRO_CONFIG_FS_2000 0x18
+#define MPU6050_GYRO_CONFIG           0x1B
+#define MPU6050_GYRO_CONFIG_FS_250    0x00
+#define MPU6050_GYRO_CONFIG_FS_500    0x08
+#define MPU6050_GYRO_CONFIG_FS_1000   0x10
+#define MPU6050_GYRO_CONFIG_FS_2000   0x18
 #define MPU6050_GYRO_CONFIG_TEST_FLAG 0xE0 // 10 ~ 105 deg/s
 
 /* 输出寄存器（只读）*/
@@ -129,25 +147,25 @@
 //            自由落体/零运动检测相关寄存器及可用值
 ////////////////////////////////////////////////////////////////
 
-#define MPU6050_FF_THR 0x1D // 自由落体检测阈值, 2mg/LSB
-#define MPU6050_FF_DUR 0x1E // 自由落体检测持续时间，单位 ms
+#define MPU6050_FF_THR                           0x1D // 自由落体检测阈值, 2mg/LSB
+#define MPU6050_FF_DUR                           0x1E // 自由落体检测持续时间，单位 ms
 
-#define MPU6050_MOT_THR 0x1F // 运动检测阈值, 2mg/LSB
-#define MPU6050_MOT_DUR 0x20 // 运动检测持续时间，单位 ms
+#define MPU6050_MOT_THR                          0x1F // 运动检测阈值, 2mg/LSB
+#define MPU6050_MOT_DUR                          0x20 // 运动检测持续时间，单位 ms
 
-#define MPU6050_MOT_STATUS 0x61       // 运动状态，只读
-#define MPU6050_MOT_STATUS_NEG_X 0x80 // X 负轴
-#define MPU6050_MOT_STATUS_POS_X 0x40 // X 正轴
-#define MPU6050_MOT_STATUS_NEG_Y 0x20
-#define MPU6050_MOT_STATUS_POS_Y 0x10
-#define MPU6050_MOT_STATUS_NEG_Z 0x08
-#define MPU6050_MOT_STATUS_POS_Z 0x04
-#define MPU6050_MOT_STATUS_ZERO_MOT 0x01
+#define MPU6050_MOT_STATUS                       0x61 // 运动状态，只读
+#define MPU6050_MOT_STATUS_NEG_X                 0x80 // X 负轴
+#define MPU6050_MOT_STATUS_POS_X                 0x40 // X 正轴
+#define MPU6050_MOT_STATUS_NEG_Y                 0x20
+#define MPU6050_MOT_STATUS_POS_Y                 0x10
+#define MPU6050_MOT_STATUS_NEG_Z                 0x08
+#define MPU6050_MOT_STATUS_POS_Z                 0x04
+#define MPU6050_MOT_STATUS_ZERO_MOT              0x01
 
-#define MPU6050_MOT_DETECT_CTRL 0x69
+#define MPU6050_MOT_DETECT_CTRL                  0x69
 #define MPU6050_MOT_DETECT_CTRL_ACCEL_DELAY_X(x) (((x)&0x03) << 4)
-#define MPU6050_MOT_DETECT_CTRL_FF_COUNT_X(x) (((x)&0x03) << 2)
-#define MPU6050_MOT_DETECT_CTRL_MOT_COUNT_X(x) ((x)&0x03)
+#define MPU6050_MOT_DETECT_CTRL_FF_COUNT_X(x)    (((x)&0x03) << 2)
+#define MPU6050_MOT_DETECT_CTRL_MOT_COUNT_X(x)   ((x)&0x03)
 
 // * 与自由落体或运动检测不同，零运动检测在首次检测到零运动和不再检测到零运动时都触发中断。
 // * 当检测到零运动事件时，将在 MOT_DETECT_STATUS 寄存器(寄存器97)中显示零运动状态。
@@ -161,55 +179,55 @@
 //                         中断配置
 ////////////////////////////////////////////////////////////////
 
-#define MPU6050_INT_PIN_CFG 0x37
-#define MPU6050_INT_CTRL 0x38
-#define MPU6050_INT_CTRL_FF_EN 0x80
-#define MPU6050_INT_CTRL_MOT_EN 0x40
-#define MPU6050_INT_CTRL_ZMOT_EN 0x20
-#define MPU6050_INT_CTRL_FIFO_OV_EN 0x10
-#define MPU6050_INT_CTRL_I2C_MST_INT_EN 0x08
-#define MPU6050_INT_CTRL_DATA_RDY_EN 0x01
+#define MPU6050_INT_PIN_CFG              0x37
+#define MPU6050_INT_CTRL                 0x38
+#define MPU6050_INT_CTRL_FF_EN           0x80
+#define MPU6050_INT_CTRL_MOT_EN          0x40
+#define MPU6050_INT_CTRL_ZMOT_EN         0x20
+#define MPU6050_INT_CTRL_FIFO_OV_EN      0x10
+#define MPU6050_INT_CTRL_I2C_MST_INT_EN  0x08
+#define MPU6050_INT_CTRL_DATA_RDY_EN     0x01
 
-#define MPU6050_INT_STATUS 0x3A
-#define MPU6050_INT_STATUS_FF_FLAG 0x80
-#define MPU6050_INT_STATUS_MOT_FLAG 0x40
-#define MPU6050_INT_STATUS_ZMOT_FLAG 0x20
-#define MPU6050_INT_STATUS_FIFO_OV_FLAG 0x10
-#define MPU6050_INT_STATUS_I2C_MST_FLAG 0x08
+#define MPU6050_INT_STATUS               0x3A
+#define MPU6050_INT_STATUS_FF_FLAG       0x80
+#define MPU6050_INT_STATUS_MOT_FLAG      0x40
+#define MPU6050_INT_STATUS_ZMOT_FLAG     0x20
+#define MPU6050_INT_STATUS_FIFO_OV_FLAG  0x10
+#define MPU6050_INT_STATUS_I2C_MST_FLAG  0x08
 #define MPU6050_INT_STATUS_DATA_RDY_FLAG 0x01
 
 ////////////////////////////////////////////////////////////////
 //                          FIFO
 ////////////////////////////////////////////////////////////////
 
-#define MPU6050_FIFO_EN 0x23 // FIFO 缓冲区使能
-#define MPU6050_FIFO_EN_TEMP 0x80
+#define MPU6050_FIFO_EN        0x23 // FIFO 缓冲区使能
+#define MPU6050_FIFO_EN_TEMP   0x80
 #define MPU6050_FIFO_EN_GYRO_X 0x40
 #define MPU6050_FIFO_EN_GYRO_Y 0x20
 #define MPU6050_FIFO_EN_GYRO_Z 0x10
-#define MPU6050_FIFO_EN_ACCEL 0x08
-#define MPU6050_FIFO_EN_SLV2 0x04
-#define MPU6050_FIFO_EN_SLV1 0x02
-#define MPU6050_FIFO_EN_SLV0 0x01
+#define MPU6050_FIFO_EN_ACCEL  0x08
+#define MPU6050_FIFO_EN_SLV2   0x04
+#define MPU6050_FIFO_EN_SLV1   0x02
+#define MPU6050_FIFO_EN_SLV0   0x01
 
-#define MPU6050_I2C_MST_CTRL 0x24
-#define MPU6050_I2C_SLV0_ADDR 0x25
-#define MPU6050_I2C_SLV0_REG 0x26
-#define MPU6050_I2C_SLV0_CTRL 0x27
-#define MPU6050_I2C_SLV1_ADDR 0x28
-#define MPU6050_I2C_SLV1_REG 0x29
-#define MPU6050_I2C_SLV1_CTRL 0x2A
-#define MPU6050_I2C_SLV2_ADDR 0x2B
-#define MPU6050_I2C_SLV2_REG 0x2C
-#define MPU6050_I2C_SLV2_CTRL 0x2D
-#define MPU6050_I2C_SLV3_ADDR 0x2E
-#define MPU6050_I2C_SLV3_REG 0x2F
-#define MPU6050_I2C_SLV3_CTRL 0x30
-#define MPU6050_I2C_SLV4_ADDR 0x31
-#define MPU6050_I2C_SLV4_REG 0x32
-#define MPU6050_I2C_SLV4_DO 0x33
-#define MPU6050_I2C_SLV4_CTRL 0x34
-#define MPU6050_I2C_SLV4_DI 0x35
+#define MPU6050_I2C_MST_CTRL   0x24
+#define MPU6050_I2C_SLV0_ADDR  0x25
+#define MPU6050_I2C_SLV0_REG   0x26
+#define MPU6050_I2C_SLV0_CTRL  0x27
+#define MPU6050_I2C_SLV1_ADDR  0x28
+#define MPU6050_I2C_SLV1_REG   0x29
+#define MPU6050_I2C_SLV1_CTRL  0x2A
+#define MPU6050_I2C_SLV2_ADDR  0x2B
+#define MPU6050_I2C_SLV2_REG   0x2C
+#define MPU6050_I2C_SLV2_CTRL  0x2D
+#define MPU6050_I2C_SLV3_ADDR  0x2E
+#define MPU6050_I2C_SLV3_REG   0x2F
+#define MPU6050_I2C_SLV3_CTRL  0x30
+#define MPU6050_I2C_SLV4_ADDR  0x31
+#define MPU6050_I2C_SLV4_REG   0x32
+#define MPU6050_I2C_SLV4_DO    0x33
+#define MPU6050_I2C_SLV4_CTRL  0x34
+#define MPU6050_I2C_SLV4_DI    0x35
 #define MPU6050_I2C_MST_STATUS 0x36
 
 ////////////////////////////////////////////////////////////////
@@ -255,92 +273,89 @@
  * 6       | Reserved
  * 7       | Stops the clock and keeps the timing generator in reset
 */
-#define MPU6050_PWR_MGMT_1 0x6B
-#define MPU6050_PWR1_NORMAL 0x00
-#define MPU6050_PWR1_DEVICE_RESET 0x80
-#define MPU6050_PWR1_SLEEP 0x40
-#define MPU6050_PWR1_CYCLE 0x20
-#define MPU6050_PWR1_TEMP_DIS 0x08
-#define MPU6050_PWR1_CLKSEL_INTERNAL 0x00
-#define MPU6050_PWR1_CLKSEL_PLL_GYRO_X 0x01
-#define MPU6050_PWR1_CLKSEL_PLL_GYRO_Y 0x02
-#define MPU6050_PWR1_CLKSEL_PLL_GYRO_Z 0x03
-#define MPU6050_PWR1_CLKSEL_PLL_EXT_32768Hz 0x04
+#define MPU6050_PWR_MGMT_1                   0x6B
+#define MPU6050_PWR1_NORMAL                  0x00
+#define MPU6050_PWR1_DEVICE_RESET            0x80
+#define MPU6050_PWR1_SLEEP                   0x40
+#define MPU6050_PWR1_CYCLE                   0x20
+#define MPU6050_PWR1_TEMP_DIS                0x08
+#define MPU6050_PWR1_CLKSEL_INTERNAL         0x00
+#define MPU6050_PWR1_CLKSEL_PLL_GYRO_X       0x01
+#define MPU6050_PWR1_CLKSEL_PLL_GYRO_Y       0x02
+#define MPU6050_PWR1_CLKSEL_PLL_GYRO_Z       0x03
+#define MPU6050_PWR1_CLKSEL_PLL_EXT_32768Hz  0x04
 #define MPU6050_PWR1_CLKSEL_PLL_EXT_19200KHz 0x05
-#define MPU6050_PWR1_CLKSEL_KEEP_RESET 0x07
+#define MPU6050_PWR1_CLKSEL_KEEP_RESET       0x07
 
 ////////////////////////////////////////////////////////////////
 //                        other
 ////////////////////////////////////////////////////////////////
 
-#define MPU6050_I2C_SLV0_DO 0x63
-#define MPU6050_I2C_SLV1_DO 0x64
-#define MPU6050_I2C_SLV2_DO 0x65
-#define MPU6050_I2C_SLV3_DO 0x66
-#define MPU6050_I2C_MST_DELAY_CTRL 0x67
+#define MPU6050_I2C_SLV0_DO            0x63
+#define MPU6050_I2C_SLV1_DO            0x64
+#define MPU6050_I2C_SLV2_DO            0x65
+#define MPU6050_I2C_SLV3_DO            0x66
+#define MPU6050_I2C_MST_DELAY_CTRL     0x67
 
-#define MPU6050_SIGNAL_PATH_RESET 0x68
+#define MPU6050_SIGNAL_PATH_RESET      0x68
 
-#define MPU6050_USER_CTRL 0x6A
-#define MPU6050_USER_CTRL_FIFO_EN 0x40
-#define MPU6050_USER_CTRL_I2C_MST_EN 0x20
-#define MPU6050_USER_CTRL_I2C_IF_DIS 0x10
-#define MPU6050_USER_CTRL_FIFO_RST 0x04
-#define MPU6050_USER_CTRL_I2C_MST_RST 0x02
+#define MPU6050_USER_CTRL              0x6A
+#define MPU6050_USER_CTRL_FIFO_EN      0x40
+#define MPU6050_USER_CTRL_I2C_MST_EN   0x20
+#define MPU6050_USER_CTRL_I2C_IF_DIS   0x10
+#define MPU6050_USER_CTRL_FIFO_RST     0x04
+#define MPU6050_USER_CTRL_I2C_MST_RST  0x02
 #define MPU6050_USER_CTRL_SIG_COND_RST 0x01
 
-#define MPU6050_PWR_MGMT_2 0x6C
-#define MPU6050_BANK_SEL 0x6D
-#define MPU6050_MEM_START_ADDR 0x6E
-#define MPU6050_MEM_R_W 0x6F
-#define MPU6050_DMP_CFG_1 0x70
-#define MPU6050_DMP_CFG_2 0x71
-#define MPU6050_FIFO_COUNTH 0x72
-#define MPU6050_FIFO_COUNTL 0x73
-#define MPU6050_FIFO_R_W 0x74
-#define MPU6050_WHO_AM_I 0x75// !< WHO_AM_I register identifies the device. Expected value is 0x68.
+#define MPU6050_PWR_MGMT_2             0x6C
+#define MPU6050_BANK_SEL               0x6D
+#define MPU6050_MEM_START_ADDR         0x6E
+#define MPU6050_MEM_R_W                0x6F
+#define MPU6050_DMP_CFG_1              0x70
+#define MPU6050_DMP_CFG_2              0x71
+#define MPU6050_FIFO_COUNTH            0x72
+#define MPU6050_FIFO_COUNTL            0x73
+#define MPU6050_FIFO_R_W               0x74
+#define MPU6050_WHO_AM_I               0x75 // !< WHO_AM_I register identifies the device. Expected value is 0x68.
 
 ////////////////////////////////////////////////////////////////
 //                       mpu6050 api
 ////////////////////////////////////////////////////////////////
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-typedef struct
-{
-    /* drv */
-    uint8_t dev_addr;
-    bool (*read)(uint8_t reg_addr, uint8_t *dat);
-    bool (*read_buf)(uint8_t reg_addr, uint8_t *dat, size_t len);
-    bool (*write)(uint8_t reg_addr, uint8_t dat);
-    void (*delay)(uint16_t ms);
-    /* auto-init fields, read-only */
-    float acce_unit;
-    float gyro_unit;
-} mpu6050_drv_t;
+    typedef struct
+    {
+        /* drv */
+        uint8_t dev_addr;
+        bool (*read)(uint8_t reg_addr, uint8_t *dat);
+        bool (*read_buf)(uint8_t reg_addr, uint8_t *dat, size_t len);
+        bool (*write)(uint8_t reg_addr, uint8_t dat);
+        void (*delay)(uint16_t ms);
+        /* auto-init fields, read-only */
+        float acce_unit;
+        float gyro_unit;
+    } mpu6050_drv_t;
 
-typedef uint8_t *mpu6050_cmd_list_t[2];
+    typedef uint8_t mpu6050_cmd_list_t[][2];
 
-#define X 0
-#define Y 1
-#define Z 2
+    typedef struct
+    {
+        float temp;
+        float accel[3];
+        float angle[3];
+    } mpu6050_data_t;
 
-typedef struct
-{
-    float temp;
-    float accel[3];
-    float angle[3];
-} mpu6050_data_t;
+    bool mpu6050_init(mpu6050_drv_t *drv, mpu6050_cmd_list_t init_sequence, uint8_t len);
 
-bool mpu6050_init(mpu6050_drv_t *drv, mpu6050_cmd_list_t init_sequence, uint8_t len);
+    bool mpu6050_test();
 
-bool mpu6050_test();
+    void mpu6050_write_cmd(uint8_t regAddr, uint8_t val);
 
-void mpu6050_write_cmd(uint8_t regAddr, uint8_t val);
-
-bool mpu6050_read_data(mpu6050_data_t *dat);
+    bool mpu6050_read_data(mpu6050_data_t *dat);
 
 #ifdef __cplusplus
 }
