@@ -327,35 +327,35 @@ extern "C"
 {
 #endif
 
-    typedef struct
-    {
-        /* drv */
-        uint8_t dev_addr;
-        bool (*read)(uint8_t reg_addr, uint8_t *dat);
-        bool (*read_buf)(uint8_t reg_addr, uint8_t *dat, size_t len);
-        bool (*write)(uint8_t reg_addr, uint8_t dat);
-        void (*delay)(uint16_t ms);
-        /* auto-init fields, read-only */
-        float acce_unit;
-        float gyro_unit;
-    } mpu6050_drv_t;
+typedef struct
+{
+    /* drv */
+    uint8_t dev_addr;
+    bool (*read)(uint8_t reg_addr, uint8_t *dat);
+    bool (*read_buf)(uint8_t reg_addr, uint8_t *dat, size_t len);
+    bool (*write)(uint8_t reg_addr, uint8_t dat);
+    void (*delay)(uint16_t ms);
+    /* auto-init fields, read-only */
+    float acce_unit;
+    float gyro_unit;
+} mpu6050_drv_t;
 
-    typedef uint8_t mpu6050_cmd_list_t[][2];
+typedef uint8_t mpu6050_cmd_list_t[][2];
 
-    typedef struct
-    {
-        float temp;
-        float accel[3];
-        float angle[3];
-    } mpu6050_data_t;
+typedef struct
+{
+    float temp;
+    float accel[3];
+    float angle[3];
+} mpu6050_data_t;
 
-    bool mpu6050_init(mpu6050_drv_t *drv, mpu6050_cmd_list_t init_sequence, uint8_t len);
+bool mpu6050_init(mpu6050_drv_t *drv, mpu6050_cmd_list_t init_sequence, uint8_t len);
 
-    bool mpu6050_test();
+bool mpu6050_test();
 
-    void mpu6050_write_cmd(uint8_t regAddr, uint8_t val);
+void mpu6050_write_cmd(uint8_t regAddr, uint8_t val);
 
-    bool mpu6050_read_data(mpu6050_data_t *dat);
+bool mpu6050_read_data(mpu6050_data_t *dat);
 
 #ifdef __cplusplus
 }
