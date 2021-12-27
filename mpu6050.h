@@ -330,14 +330,15 @@ extern "C"
 typedef struct
 {
     /* drv */
-    uint8_t dev_addr;
+    uint8_t dev_addr; // !< WHO_AM_I register identifies the device. Expected value is 0x68. (MPU9250 is 0x71)
     bool (*read)(uint8_t reg_addr, uint8_t *dat);
     bool (*read_buf)(uint8_t reg_addr, uint8_t *dat, size_t len);
     bool (*write)(uint8_t reg_addr, uint8_t dat);
     void (*delay)(uint16_t ms);
+    
     /* auto-init fields, read-only */
-    float acce_unit;
-    float gyro_unit;
+    float acce_unit; // auto-init, don't set it
+    float gyro_unit; // auto-init, don't set it
 } mpu6050_drv_t;
 
 typedef uint8_t mpu6050_cmd_list_t[][2];
@@ -345,8 +346,8 @@ typedef uint8_t mpu6050_cmd_list_t[][2];
 typedef struct
 {
     float temp;
-    float accel[3];
-    float angle[3];
+    float accel[3]; // unit: g
+    float angle[3]; // unit: degrees/s
 } mpu6050_data_t;
 
 bool mpu6050_init(mpu6050_drv_t *drv, mpu6050_cmd_list_t init_sequence, uint8_t len);
